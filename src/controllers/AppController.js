@@ -26,11 +26,40 @@ exports.getProductsId = async (req, res) => {
   }
 };
 
-exports.updateProudct = async (req, res) => {
+exports.updateProduct = async (req, res) => {
   try {
     const productId = req.params.id;
-    const {editingProduct} = req.body;
-    const data = await AppService.updateProduct(productId);
+    const editingProduct = req.body;
+    const data = await AppService.updateProduct(productId, editingProduct);
+
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error en el servidor",
+      error: error.message,
+    });
+  }
+};
+
+exports.deleteProduct = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const data = await AppService.deleteProduct(productId);
+
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error en el servidor",
+      error: error.message,
+    });
+  }
+};
+
+exports.createProduct = async (req, res) => {
+  try {
+    const newProduct = req.body;
+    console.log(newProduct);
+    const data = await AppService.createProduct(newProduct);
 
     res.status(200).json(data);
   } catch (error) {

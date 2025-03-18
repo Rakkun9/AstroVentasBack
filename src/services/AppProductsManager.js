@@ -55,22 +55,17 @@ class AppProductsManager {
   }
 
   static async updateProduct(productId, editingProduct) {
+    console.log(editingProduct);
     try {
-      const { name, model, price} =
-        editingProduct;
+      const { name, model, price } = editingProduct;
 
       const sql = `
         UPDATE products 
-        SET name = ?, model = ?, price = ?,
+        SET name = ?, model = ?, price = ?
         WHERE id = ?
       `;
 
-      const result = await query(sql, [
-        name,
-        model,
-        price,
-        productId,
-      ]);
+      const result = await query(sql, [name, model, price, productId]);
 
       if (result.affectedRows === 0) {
         throw new Error("No se encontró el producto para actualizar");
@@ -79,6 +74,66 @@ class AppProductsManager {
       return { message: "Producto actualizado correctamente" };
     } catch (error) {
       console.error("Error al actualizar el producto:", error);
+      throw error;
+    }
+  }
+
+  static async deleteProduct(productId) {
+    try {
+      // Eliminar registros dependientes en order_items
+      const deleteOrderItemsSql = `
+        DELETE FROM order_items 
+        WHERE product_id = ?
+      `;
+      await query(deleteOrderItemsSql, productId);
+
+      const deleteOrderItemsSqltwo = `
+        DELETE FROM reviews 
+        WHERE product_id = ?
+      `;
+      await query(deleteOrderItemsSqltwo, productId);
+
+      // Eliminar el producto
+      const deleteProductSql = `
+        DELETE FROM products 
+        WHERE id = ?
+      `;
+      const result = await query(deleteProductSql, productId);
+
+      // Verificar si se eliminó algún registro
+      if (result.affectedRows === 0) {
+        throw new Error("No se encontró el producto para eliminar");
+      }
+
+      return { message: "Producto eliminado correctamente" };
+    } catch (error) {
+      console.error("Error al eliminar el producto:", error);
+      throw error;
+    }
+  }
+  static async createProduct(newProduct) {
+    try {
+      const insertProductSql = `
+        INSERT INTO products (name, model, price, image, description, category_id, brand_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `;
+      const result = await query(insertProductSql, [
+        newProduct.name,
+        newProduct.model,
+        newProduct.price,
+        newProduct.image,
+        newProduct.description,
+        newProduct.category_id,
+        newProduct.brand_id,
+      ]);
+      
+
+      return {
+        id: result.insertId,
+        message: "Producto agregado correctamente",
+      };
+    } catch (error) {
+      console.error("Error al agregar el producto:", error);
       throw error;
     }
   }

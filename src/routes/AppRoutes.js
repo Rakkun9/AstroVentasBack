@@ -11,4 +11,4 @@ router.delete ("/products/:id", AppController.deleteProduct);
 router.post ("/products", AppController.createProduct);
 router.post ("/login", AppController.login);
 
-module.exports = router; // Asegúrate de exportar el router
+module.exports = router; 

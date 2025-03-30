@@ -92,3 +92,17 @@ exports.login = async (req, res) => {
       .json({ success: false, message: "Error en el servidor", error });
   }
 };
+exports.updateAllProduct = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const editingProduct = req.body;
+    const data = await AppService.updateProduct(productId, editingProduct);
+
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error en el servidor",
+      error: error.message,
+    });
+  }
+};

@@ -7,6 +7,7 @@ const AppController = require("../controllers/AppController");
 router.get("/products", AppController.getProducts);
 router.get ("/products/:id", AppController.getProductsId);
 router.put ("/products/:id", AppController.updateProduct);
+router.set ("/products/:id", AppController.updateAllProduct);
 router.delete ("/products/:id", AppController.deleteProduct);
 router.post ("/products", AppController.createProduct);
 router.post ("/login", AppController.login);
